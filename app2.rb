@@ -1,59 +1,92 @@
 require 'bundler'
 Bundler.require
 
-require_relative 'lib/game'
+# require_relative 'lib/game'
 require_relative 'lib/player'
+
 ennemies = []
 
 #Accueil 
 puts "-------------------------------------------------"
-puts "|Bienvenue sur 'ILS VEULENT TOUS MA POO' !      |"
+puts "|   Bienvenue sur 'ILS VEULENT TOUS MA POO' !   |"
 puts "|Le but du jeu est d'être le dernier survivant !|"
 puts "-------------------------------------------------"
+
 sleep 1
 
-#Initialisation du joueur
+#Initialisation du joueur HumanPlayer
 puts "Quel est ton petit nom?"
 print "> " 
-print name = gets.chomp  
+name = gets.chomp  
 human = HumanPlayer.new(name)
+puts " "
 
-#Initialisation du joueur
+#Initialisation des instances de l'objet Player
 ennemies << player1 = Player.new("Josiane")
 ennemies << player2 = Player.new("José")
 
-#COMBAT
-while human.life_points > 0 || player1.life_points > 0 && player2.life_points > 0 
-  puts "// Voici l'état de chaque joueur :"
-  sleep 1
+#Combat 
+while human.life_points > 0 && (player1.life_points > 0 || player2.life_points > 0) 
+
+  puts "// Voici ton etat de santé et ton arme de départ:" #indique ton etat de sante
   print human.show_state
-  print player1.show_state
-  print player2.show_state
-  sleep 1
   puts " "
-  puts "~~~~> C'est parti pour la fight <~~~~"
+
   sleep 1
-  human.attacks(player1)
-  break if player1.life_points <= 0
-  player1.attacks(human)
-  break if human.life_points <= 0
-  human.attacks(player2)
-  break if player2.life_points <= 0
-  player2.attacks(human) 
-  break if human.life_points <= 0
-  puts " " 
+
+  #Affichage des options possibles dans le menu + input 
+  puts "Quelle action veux-tu effectuer ?"
+  puts " "
+  puts "a - chercher une meilleure arme"
+  puts "s - chercher à se soigner"
+  puts " "
+  puts "attaquer un joueur en vue :"
+    if player1.life_points > 0 #boucle en fonction de si le joueur est mort ou s'il faut continuer à l'attaquer
+      puts "0 - #{player1.name} a #{player1.life_points} points de vie"
+    else
+      puts "#{player1.name} died"
+    end
+
+    if player2.life_points > 0
+      puts "1 - #{player2.name} a #{player2.life_points} points de vie"
+    else
+      puts "#{player2.name} died"
+    end
+  print "> "
+  puts choice = gets.chomp
+
+  case choice
+  when "a"
+    human.search_weapon
+  when "s"
+    human.search_health_pack
+  when "0"
+    human.attacks(player1)
+    sleep 1
+    puts player1.show_state
+  when "1"
+    human.attacks(player2)
+    sleep 1
+    puts player2.show_state
+  else
+    puts "error baby, tu as perdu un coup"
+  end
+
   sleep 1
-end
+
+  break if human.life_points <= 0 || (player1.life_points <= 0 && player2.life_points <= 0)
+
+  puts " "
+  puts "Les autres joueurs t'attaquent !"
+  ennemies.each do |ennemie|
+    ennemie.attacks(human) if ennemie.life_points > 0 
+  end
+  puts " "
+end 
 
 #Fin du game
-puts ". . .La partie est finie"
-if player1.life_points <= 0 && player2.life_points <= 0
-  sleep 1
+if human.life_points > 0
   puts "BRAVO ! TU AS GAGNE !"
-  sleep 1
-elsif human.life_points <= 0 
-  puts ". . ."
-  sleep 1
+else
   puts "Loser ! Tu as perdu !"
-  sleep 1
 end

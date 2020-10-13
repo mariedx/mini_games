@@ -12,7 +12,7 @@ class Player
     puts "#{@name} a #{@life_points} points de vie" if life_points >=1
   end
 
-  def gets_damage(damage)
+  def gets_damage(damage) #damage correspond au nombre de dommages
     @life_points -= damage
     puts "le joueur #{@name} a ete tué" if life_points <=0
   end
@@ -20,7 +20,7 @@ class Player
   def attacks(player)
     puts "#{@name} attaque #{player.name}"
     attack = compute_damage
-    puts "il/elle lui inflige #{attack} point de dommages"
+    puts "il/elle lui inflige #{attack} point(s) de dommages"
     player.gets_damage(attack)
   end
 
@@ -39,7 +39,7 @@ class HumanPlayer < Player
   end
 
   def show_state
-    puts "#{@name} a #{@life_points} points de vie et une arme de niveau #{@weapon_level}" if life_points >= 1
+    puts "#{@name} a #{@life_points} point(s) de vie et une arme de niveau #{@weapon_level}" if life_points >= 1
   end 
 
   def compute_damage
@@ -48,12 +48,12 @@ class HumanPlayer < Player
 
   def search_weapon
     new_weapon = rand(1..6)
-    puts "Tu as trouvé une arme de niveau #{@weapon_level}"
+    puts "Tu as trouvé une arme de niveau #{new_weapon}"
     if new_weapon > @weapon_level
-      @weapon_level = new_weapon
       puts "Youhou ! elle est meilleure que mon arme actuelle : je la prend."
+      @weapon_level = new_weapon
     else 
-      "M@*#$... elle n'est pas mieux que ton arme actuelle..."
+      puts "shit... elle n'est pas mieux que ton arme actuelle..."
     end
   end
 
@@ -63,11 +63,12 @@ class HumanPlayer < Player
     if health_pack == 1 
       puts "Tu n'as rien trouvé... "
     elsif health_pack >= 2 && health_pack <= 5
-      life_points += 50
+      @life_points += 50
       puts "Bravo, tu as trouvé un pack de +50 points de vie !"
     elsif health_pack == 6 
-      life_points += 80
+      @life_points += 80
       puts "Waow, tu as trouvé un pack de +80 points de vie !"
     end
+    @life_points = 100 if @life_points > 100 #permet de caper le niveau de vie a 100
   end
 end
